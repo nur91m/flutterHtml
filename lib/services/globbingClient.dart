@@ -10,6 +10,7 @@ class GlobbingClient {
   static const String _onWay = "https://kz.globbing.com/ru/profile/my-orders/on-way?";
   static const String _atUsaStore = "https://kz.globbing.com/ru/profile/my-orders/in-warehouse?";
   static const String _added = "https://kz.globbing.com/ru/profile/my-orders/qr-orders?";
+  static const String _received = "https://kz.globbing.com/ru/profile/my-orders/received?";
   
   static const String _email = "madina2030@list.ru";
   static const String _password = "madina90";
@@ -69,6 +70,10 @@ class GlobbingClient {
     return await _parseOrders(_added);
   }
 
+  Future<List<Order>> fetchReceivedOrders() async {    
+    return await _parseOrders(_received);
+  }
+
   Future<List<Order>> fetchAllOrders() async {    
     List<Future<List<Order>>> querries = [];
     querries.add(_parseOrders(_added));
@@ -81,8 +86,6 @@ class GlobbingClient {
     
     return ordersList.expand((list) => list).toList();
   }
-
-
 
   Future<List<Order>> _parseOrders(String url) async {
     OrderStatus orderStatus = getOrderStatus(url);
@@ -177,6 +180,9 @@ class GlobbingClient {
         break;
       case _onWay:
         return OrderStatus.onWay;
+        break;
+      case _received:
+        return OrderStatus.recieved;
         break;
       default:
         return OrderStatus.added;        
