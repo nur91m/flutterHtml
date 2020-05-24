@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import '../utils/getOrderDescription.dart';
 import '../widgets/OrderItem.dart';
 import '../services/globbingClient.dart';
@@ -36,14 +37,19 @@ class _OrderListState extends State<OrderList> {
         gClient.fetchAllOrders().then((value) {
           setState(() {
             orders = value;
+            filteredOrders = value;
           });
         });
       }
     });
   }
 
-  void handleFilter(selectedFilter) {
-    print(selectedFilter);
+  void handleFilter(OrderStatus selectedFilter) {
+    setState(() {
+
+      filteredOrders = selectedFilter == OrderStatus.all ? orders :
+          orders.where((order) => order.status == selectedFilter).toList();
+    });
   }
 
   @override
@@ -62,12 +68,16 @@ class _OrderListState extends State<OrderList> {
           // )
           PopupMenuButton(
             onSelected: handleFilter,
-            icon:Icon(Icons.filter_list, size: 28,),
+            icon: Icon(
+              Icons.filter_list,
+              size: 28,
+            ),
             itemBuilder: (context) {
               return OrderStatus.values
-                  .map((status) => PopupMenuItem(                    
-                    textStyle: TextStyle(fontSize: 14),
-                        child: ListTile(                                               
+                  .map((status) => PopupMenuItem(
+                        value: status,
+                        textStyle: TextStyle(fontSize: 14),
+                        child: ListTile(
                           title: Text(getOrderDescription(status)),
                         ),
                       ))
@@ -76,12 +86,32 @@ class _OrderListState extends State<OrderList> {
           )
         ],
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          return OrderItem(order: orders[index]);
-        },
-        itemCount: orders.length,
-      ),
+      body: filteredOrders.length != 0
+          ? ListView.builder(
+              itemBuilder: (context, index) {
+                return OrderItem(order: filteredOrders[index]);
+              },
+              itemCount: filteredOrders.length,
+            )
+          : Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                LayoutBuilder(
+                  builder: (context, contraints) => SvgPicture.asset(
+                    "assets/icons/empty.svg",
+                    width: contraints.maxWidth * 0.4,
+                  ),
+                ),
+                Text(
+                  "Пусто",
+                  style: TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
     );
   }
 }
