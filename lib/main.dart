@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './views/DashboardView.dart';
-import './views/OrderList.dart';
+import './views/OrderListView.dart';
+import './views/OrderDetailView.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
       initialRoute: "/orders",
       routes: {
         "/" : (context) => DashboardView(),
-        "/orders" : (context) => OrderList(),
+        "/orders" : (context) => OrderListView(),
+        "/order-detail" : (context) => OrderDetailView(),
         // "/recipients" : (context) => OrderList(),
       },
     );
